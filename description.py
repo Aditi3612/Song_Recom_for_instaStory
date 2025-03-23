@@ -21,11 +21,12 @@ def rank_songs(image_description, precomputed_song_data, top_n=5):
     ranked = sorted(similarities, key=lambda x: x[1], reverse=True)
     return ranked[:top_n]
 
-def process_image(image_file):
+def process_image(image_file, manual_description=None):
     """
     Processes an uploaded image file:
       1. Uses the BLIP model to generate an initial caption.
-      2. Uses Google Gemini (with a hard-coded API key) to refine that caption.
+      2. Optionally incorporates a manual description provided by the user.
+      3. Uses Google Gemini (with a hard-coded API key) to refine the combined description.
     Returns the refined description.
     """
     from transformers import BlipProcessor, BlipForConditionalGeneration
@@ -46,7 +47,13 @@ def process_image(image_file):
     out = model_blip.generate(**inputs)
     initial_caption = processor.decode(out[0], skip_special_tokens=True)
     
-    # Refine the caption using Google Gemini
+    # Combine the initial caption with the manual description if provided
+    if manual_description:
+        combined_prompt = f"Description: {initial_caption}. Additional details provided by the user: {manual_description}"
+    else:
+        combined_prompt = f"Description: {initial_caption}"
+    
+    # Refine the combined description using Google Gemini
     gemini_model = genai.GenerativeModel(
         model_name="gemini-1.5-flash",
         system_instruction=(
@@ -56,8 +63,7 @@ def process_image(image_file):
             "The description should evoke the mood and context to inform a musical recommendation. Keep the language vivid and precise."
         )
     )
-    full_prompt = f"Description: {initial_caption}"
-    response = gemini_model.generate_content([full_prompt])
+    response = gemini_model.generate_content([combined_prompt])
     refined_description = None
     try:
         candidate = response.candidates[0]
@@ -68,6 +74,6 @@ def process_image(image_file):
                 refined_description = candidate.content.parts[0].text
             else:
                 refined_description = str(candidate.content)
-    except Exception:
+    except Exception as e:
         refined_description = initial_caption  # fallback if Gemini fails
     return refined_description

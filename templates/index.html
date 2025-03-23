@@ -12,6 +12,9 @@
       <label for="photo">Upload an Image:</label>
       <input type="file" id="photo" name="photo" accept="image/*" required>
       <br>
+      <label for="manual_description">Optional: Enter additional description for the image:</label>
+      <input type="text" id="manual_description" name="manual_description" placeholder="e.g. 'A sunny day at the beach'" >
+      <br>
       <button type="submit">Get Song Recommendations</button>
   </form>
   <div id="results"></div>
@@ -28,7 +31,6 @@
           let html = `<h2>Refined Description:</h2><p>${result.refined_description}</p>`;
           html += '<h2>Song Recommendations:</h2><ul>';
           result.recommendations.forEach(item => {
-              // Only show artist, track, and similarity
               html += `<li><strong>${item.artist} - ${item.track}</strong> (Score: ${item.similarity.toFixed(2)})</li>`;
           });
           html += '</ul>';

@@ -1,49 +1,49 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  h1 {
-    color: #333;
-  }
-  
-  form {
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    max-width: 400px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  
-  input[type="file"] {
-    margin: 10px 0;
-    width: 100%;
-    padding: 8px;
-  }
-  
-  button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-  }
-  
-  button:hover {
-    background: #0056b3;
-  }
-  
-  #results {
-    margin-top: 20px;
-    text-align: left;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+}
+
+form {
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input[type="file"],
+input[type="text"] {
+  margin: 10px 0;
+  width: 100%;
+  padding: 8px;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+#results {
+  margin-top: 20px;
+  text-align: left;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}

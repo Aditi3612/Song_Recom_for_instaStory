@@ -21,13 +21,14 @@ def upload_photo():
     if file.filename == "":
         return jsonify({'error': 'No selected file.'}), 400
 
+    # Get optional manual description from the form
+    manual_description = request.form.get('manual_description', "").strip()
+    
     # Process the uploaded image to get a refined description (API key is hard-coded)
-    refined_description = process_image(file)
+    refined_description = process_image(file, manual_description)
     
     # Use the refined description to rank songs from the precomputed data
     ranked = rank_songs(refined_description, precomputed_song_data, top_n=5)
-    
-    # Here, we ONLY return artist, track, and similarity—no long description
     recommendations = [{
         'artist': song['artist'],
         'track': song['track'],
