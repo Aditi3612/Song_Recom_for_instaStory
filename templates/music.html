@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music Extraction Results</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <h1>Music Extraction Results</h1>
+  {% for item in results %}
+    <div class="result-item">
+      <h3>{{ item.artist }} - {{ item.track }}</h3>
+      <p><strong>Lyrics:</strong> {{ item.lyrics }}</p>
+      <p><strong>Description:</strong> {{ item.description }}</p>
+    </div>
+  {% endfor %}
+  <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>
