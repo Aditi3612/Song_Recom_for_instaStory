@@ -1,4 +1,7 @@
 # Image Song Recommender
+<p align='center'>
+<img src="static/uploads/Screenshot 2025-03-24 at 7.33.23 PM" width="450" height="330" >
+</p>
 
 ![Screenshot](static/uploads)  
 *A beautiful UI for recommending songs based on an uploaded image.*
