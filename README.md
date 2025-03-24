@@ -36,8 +36,8 @@ image-song-recommender/ ├── app.py # Flask backend that processes image up
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/image-song-recommender.git
-   cd image-song-recommender
+   git clone https://github.com/ish4722/Song_Recom_for_instaStory.git
+   cd Song_Recom_for_instaStory
 
 2. **Create a Virtual Environment and Activate It**
    ```bash
