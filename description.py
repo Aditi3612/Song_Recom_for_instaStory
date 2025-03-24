@@ -25,7 +25,7 @@ def process_image(image_file, manual_description=None):
     """
     Processes an uploaded image file:
       1. Uses the BLIP model to generate an initial caption.
-      2. Optionally incorporates a manual description provided by the user.
+      2. If provided, appends a manual description.
       3. Uses Google Gemini (with a hard-coded API key) to refine the combined description.
     Returns the refined description.
     """
@@ -47,9 +47,9 @@ def process_image(image_file, manual_description=None):
     out = model_blip.generate(**inputs)
     initial_caption = processor.decode(out[0], skip_special_tokens=True)
     
-    # Combine the initial caption with the manual description if provided
+    # Combine BLIP caption with the manual description if provided
     if manual_description:
-        combined_prompt = f"Description: {initial_caption}. Additional details provided by the user: {manual_description}"
+        combined_prompt = f"Description: {initial_caption}. Additional details: {manual_description}"
     else:
         combined_prompt = f"Description: {initial_caption}"
     
@@ -74,6 +74,6 @@ def process_image(image_file, manual_description=None):
                 refined_description = candidate.content.parts[0].text
             else:
                 refined_description = str(candidate.content)
-    except Exception as e:
+    except Exception:
         refined_description = initial_caption  # fallback if Gemini fails
     return refined_description

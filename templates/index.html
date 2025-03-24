@@ -4,20 +4,82 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Image Song Recommender</title>
+  <!-- Link to your updated CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
   <h1>Image Song Recommender</h1>
   <form id="uploadForm" method="POST" action="/upload_photo" enctype="multipart/form-data">
-      <label for="photo">Upload an Image:</label>
+      <label for="photo" class="form-label">Upload an Image:</label>
       <input type="file" id="photo" name="photo" accept="image/*" required>
-      <br>
-      <label for="manual_description">Optional: Enter additional description for the image:</label>
-      <input type="text" id="manual_description" name="manual_description" placeholder="e.g. 'A sunny day at the beach'" >
-      <br>
-      <button type="submit">Get Song Recommendations</button>
+      
+      <label for="manual_description" class="form-label">Optional: Enter additional description for the image:</label>
+      <input type="text" id="manual_description" name="manual_description" placeholder="e.g. 'A sunny day at the beach'">
+
+      <!-- Flex container to hold filters side by side -->
+      <div class="filters-container">
+        
+        <!-- Artist Filters (on the left) -->
+        <fieldset class="filter-section">
+          <legend>Filter by Artist:</legend>
+          <div class="filter-options">
+            <label><input type="checkbox" name="artists" value="Sachin-Jigar"> Sachin-Jigar</label>
+            <label><input type="checkbox" name="artists" value="The Weeknd"> The Weeknd</label>
+            <label><input type="checkbox" name="artists" value="Udit Narayan"> Udit Narayan</label>
+            <label><input type="checkbox" name="artists" value="Atif Aslam"> Atif Aslam</label>
+            <label><input type="checkbox" name="artists" value="Taylor Swift"> Taylor Swift</label>
+            <label><input type="checkbox" name="artists" value="Karan Aujla"> Karan Aujla</label>
+            <label><input type="checkbox" name="artists" value="Drake"> Drake</label>
+            <label><input type="checkbox" name="artists" value="Tanishk Bagchi"> Tanishk Bagchi</label>
+            <label><input type="checkbox" name="artists" value="Diljit Dosanjh"> Diljit Dosanjh</label>
+            <label><input type="checkbox" name="artists" value="Masoom Sharma"> Masoom Sharma</label>
+            <label><input type="checkbox" name="artists" value="Bruno Mars"> Bruno Mars</label>
+            <label><input type="checkbox" name="artists" value="Vishal Mishra"> Vishal Mishra</label>
+            <label><input type="checkbox" name="artists" value="G. V. Prakash"> G. V. Prakash</label>
+            <label><input type="checkbox" name="artists" value="SZA"> SZA</label>
+            <label><input type="checkbox" name="artists" value="Sidhu Moose Wala"> Sidhu Moose Wala</label>
+            <label><input type="checkbox" name="artists" value="Billie Eilish"> Billie Eilish</label>
+            <label><input type="checkbox" name="artists" value="Rahat Fateh Ali Khan"> Rahat Fateh Ali Khan</label>
+            <label><input type="checkbox" name="artists" value="Lady Gaga"> Lady Gaga</label>
+            <label><input type="checkbox" name="artists" value="Darshan Raval"> Darshan Raval</label>
+            <label><input type="checkbox" name="artists" value="Sachet Tandon"> Sachet Tandon</label>
+            <label><input type="checkbox" name="artists" value="Manoj Muntashir"> Manoj Muntashir</label>
+            <label><input type="checkbox" name="artists" value="Pawan Singh"> Pawan Singh</label>
+            <label><input type="checkbox" name="artists" value="Gur Sidhu"> Gur Sidhu</label>
+            <label><input type="checkbox" name="artists" value="Jimin"> Jimin</label>
+            <label><input type="checkbox" name="artists" value="Arjan Dhillon"> Arjan Dhillon</label>
+            <label><input type="checkbox" name="artists" value="AP Dhillon"> AP Dhillon</label>
+            <label><input type="checkbox" name="artists" value="Javed Ali"> Javed Ali</label>
+            <label><input type="checkbox" name="artists" value="Justin Bieber"> Justin Bieber</label>
+            <label><input type="checkbox" name="artists" value="Lana Del Rey"> Lana Del Rey</label>
+            <label><input type="checkbox" name="artists" value="Thaman S"> Thaman S</label>
+            <label><input type="checkbox" name="artists" value="Cheema Y"> Cheema Y</label>
+            <label><input type="checkbox" name="artists" value="Jaani"> Jaani</label>
+            <label><input type="checkbox" name="artists" value="Ariana Grande"> Ariana Grande</label>
+          </div>
+        </fieldset>
+        
+        <!-- Language Filters (on the right) -->
+        <fieldset class="filter-section">
+          <legend>Filter by Language:</legend>
+          <div class="filter-options">
+            <label><input type="checkbox" name="languages" value="English"> English</label>
+            <label><input type="checkbox" name="languages" value="Hindi"> Hindi</label>
+            <label><input type="checkbox" name="languages" value="Punjabi"> Punjabi</label>
+            <label><input type="checkbox" name="languages" value="Haryanvi"> Haryanvi</label>
+            <label><input type="checkbox" name="languages" value="Tamil"> Tamil</label>
+            <label><input type="checkbox" name="languages" value="Bhojpuri"> Bhojpuri</label>
+            <label><input type="checkbox" name="languages" value="Telugu"> Telugu</label>
+            <label><input type="checkbox" name="languages" value="Other"> Other</label>
+          </div>
+        </fieldset>
+      </div>
+
+      <button type="submit" class="submit-button">Get Song Recommendations</button>
   </form>
+  
   <div id="results"></div>
+
   <script>
     document.getElementById('uploadForm').addEventListener('submit', async function(e) {
       e.preventDefault();
