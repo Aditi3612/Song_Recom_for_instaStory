@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Image Song Recommender</title>
-  <!-- Link to your updated CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
@@ -14,15 +13,13 @@
       <input type="file" id="photo" name="photo" accept="image/*" required>
       
       <label for="manual_description" class="form-label">Optional: Enter additional description for the image:</label>
-      <input type="text" id="manual_description" name="manual_description" placeholder="e.g. 'A sunny day at the beach'">
-
-      <!-- Flex container to hold filters side by side -->
+      <input type="text" id="manual_description" name="manual_description" placeholder="e.g. 'A lovely romantic song for my gf'">
+      
       <div class="filters-container">
-        
-        <!-- Artist Filters (on the left) -->
         <fieldset class="filter-section">
           <legend>Filter by Artist:</legend>
           <div class="filter-options">
+            <!-- Artist checkboxes -->
             <label><input type="checkbox" name="artists" value="Sachin-Jigar"> Sachin-Jigar</label>
             <label><input type="checkbox" name="artists" value="The Weeknd"> The Weeknd</label>
             <label><input type="checkbox" name="artists" value="Udit Narayan"> Udit Narayan</label>
@@ -58,11 +55,10 @@
             <label><input type="checkbox" name="artists" value="Ariana Grande"> Ariana Grande</label>
           </div>
         </fieldset>
-        
-        <!-- Language Filters (on the right) -->
         <fieldset class="filter-section">
           <legend>Filter by Language:</legend>
           <div class="filter-options">
+            <!-- Language checkboxes -->
             <label><input type="checkbox" name="languages" value="English"> English</label>
             <label><input type="checkbox" name="languages" value="Hindi"> Hindi</label>
             <label><input type="checkbox" name="languages" value="Punjabi"> Punjabi</label>
@@ -70,12 +66,12 @@
             <label><input type="checkbox" name="languages" value="Tamil"> Tamil</label>
             <label><input type="checkbox" name="languages" value="Bhojpuri"> Bhojpuri</label>
             <label><input type="checkbox" name="languages" value="Telugu"> Telugu</label>
-            <label><input type="checkbox" name="languages" value="Other"> Other</label>
           </div>
         </fieldset>
       </div>
-
+      
       <button type="submit" class="submit-button">Get Song Recommendations</button>
+      <div id="loading" class="spinner hidden"></div>
   </form>
   
   <div id="results"></div>
@@ -83,20 +79,32 @@
   <script>
     document.getElementById('uploadForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+      // Show spinner
+      document.getElementById('loading').classList.remove('hidden');
+      // Clear previous results
+      document.getElementById('results').innerHTML = "";
+
       const formData = new FormData(this);
-      const response = await fetch('/upload_photo', { method: 'POST', body: formData });
-      const result = await response.json();
-      const resultsDiv = document.getElementById('results');
-      if (result.error) {
-          resultsDiv.innerHTML = `<p>${result.error}</p>`;
-      } else {
-          let html = `<h2>Refined Description:</h2><p>${result.refined_description}</p>`;
-          html += '<h2>Song Recommendations:</h2><ul>';
-          result.recommendations.forEach(item => {
-              html += `<li><strong>${item.artist} - ${item.track}</strong> (Score: ${item.similarity.toFixed(2)})</li>`;
-          });
-          html += '</ul>';
-          resultsDiv.innerHTML = html;
+      try {
+        const response = await fetch('/upload_photo', { method: 'POST', body: formData });
+        const result = await response.json();
+        const resultsDiv = document.getElementById('results');
+        if (result.error) {
+            resultsDiv.innerHTML = `<p class="error">${result.error}</p>`;
+        } else {
+            let html = `<h2>Description:</h2><p>${result.refined_description}</p>`;
+            html += '<h2>Song Recommendations:</h2><ul>';
+            result.recommendations.forEach(item => {
+                html += `<li><strong>${item.artist} - ${item.track}</strong> (Score: ${item.similarity.toFixed(2)})</li>`;
+            });
+            html += '</ul>';
+            resultsDiv.innerHTML = html;
+        }
+      } catch (error) {
+        document.getElementById('results').innerHTML = `<p class="error">An error occurred: ${error}</p>`;
+      } finally {
+        // Hide spinner
+        document.getElementById('loading').classList.add('hidden');
       }
     });
   </script>
