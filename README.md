@@ -1,6 +1,6 @@
 # Image Song Recommender
 
-![Screenshot](path/to/screenshot.png)  
+![Screenshot](static/uploads)  
 *A beautiful UI for recommending songs based on an uploaded image.*
 
 ## Overview
