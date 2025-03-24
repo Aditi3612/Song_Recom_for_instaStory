@@ -58,7 +58,7 @@ def process_image(image_file, manual_description=None):
         model_name="gemini-1.5-flash",
         system_instruction=(
             "You are an expert in analyzing visual content and emotions. "
-            "For the given description, refine it into a more detailed and expressive description in 50-60 words, "
+            "For the given description,  detailed and expressive description , "
             "capturing the emotions, background, and key elements such as gestures, facial expressions, and environment. "
             "The description should evoke the mood and context to inform a musical recommendation. Keep the language vivid and precise."
         )
