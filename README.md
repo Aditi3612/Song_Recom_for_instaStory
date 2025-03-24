@@ -1,7 +1,9 @@
 # Image Song Recommender
+<p align='center'>
+<img src="static/uploads/Screenshot 2025-03-24 at 7.33.23 PM.png" width="450" height="330" >
+</p>
 
-![Screenshot](path/to/screenshot.png)  
-*A beautiful UI for recommending songs based on an uploaded image.*
+**A beautiful UI for recommending songs based on an uploaded image.**
 
 ## Overview
 
@@ -34,8 +36,8 @@ image-song-recommender/ ├── app.py # Flask backend that processes image up
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/image-song-recommender.git
-   cd image-song-recommender
+   git clone https://github.com/ish4722/Song_Recom_for_instaStory.git
+   cd Song_Recom_for_instaStory
 
 2. **Create a Virtual Environment and Activate It**
    ```bash
