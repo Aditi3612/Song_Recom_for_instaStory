@@ -56,12 +56,10 @@ def process_image(image_file, manual_description=None):
     # Refine the combined description using Google Gemini
     gemini_model = genai.GenerativeModel(
         model_name="gemini-1.5-flash",
-        system_instruction=(
-            "You are an expert in analyzing visual content and emotions. "
-            "For the given description,  detailed and expressive description , "
-            "capturing the emotions, background, and key elements such as gestures, facial expressions, and environment. "
-            "The description should evoke the mood and context to inform a musical recommendation. Keep the language vivid and precise."
-        )
+        system_instruction= "You are an expert in analyzing visual content and emotions. Given the description of an image, "
+    "provide a single, detailed, and expressive description that captures the overall mood, background, "
+    "and key visual elements (such as gestures, facial expressions, and environment). "
+    "The response should be unified and vivid,description should be in very detail"
     )
     response = gemini_model.generate_content([combined_prompt])
     refined_description = None
