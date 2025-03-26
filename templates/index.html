@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Image Song Recommender</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> 
 </head>
 <body>
   <h1>Image Song Recommender</h1>
@@ -74,6 +74,7 @@
       <div id="loading" class="spinner hidden"></div>
   </form>
   
+  <!-- This div will display the results from the server -->
   <div id="results"></div>
 
   <script>
@@ -92,14 +93,56 @@
         if (result.error) {
             resultsDiv.innerHTML = `<p class="error">${result.error}</p>`;
         } else {
-            let html = `<h2>Description:</h2><p>${result.refined_description}</p>`;
+            // Create a button to toggle the refined description
+            let html = `<button id="toggleDescription" class="submit-button" style="margin-bottom: 20px;">Show Description</button>
+                        <div id="description" style="display: none;">
+                          <h2>Description:</h2>
+                          <p>${result.refined_description}</p>
+                        </div>`;
             html += '<h2>Song Recommendations:</h2><ul>';
-            result.recommendations.forEach(item => {
-                html += `<li><strong>${item.artist} - ${item.track}</strong> (Score: ${item.similarity.toFixed(2)})</li>`;
+            // Create interactive song recommendation cards
+            result.recommendations.forEach((item, index) => {
+              html += `<li>
+                        <div class="song-card" data-index="${index}">
+                          <h3>${item.artist} - ${item.track}</h3>
+                          <button class="toggle-info">Show Details</button>
+                          <div class="song-info">
+                            <p>Similarity Score: ${item.similarity.toFixed(2)}</p>
+                          </div>
+                        </div>
+                      </li>`;
             });
             html += '</ul>';
             resultsDiv.innerHTML = html;
-        }
+
+            // Toggle for the refined description
+            document.getElementById('toggleDescription').addEventListener('click', function() {
+              const descDiv = document.getElementById('description');
+              if (descDiv.style.display === "none") {
+                descDiv.style.display = "block";
+                this.textContent = "Hide Description";
+              } else {
+                descDiv.style.display = "none";
+                this.textContent = "Show Description";
+              }
+            });
+
+            // Toggle for each song card's details
+            document.querySelectorAll(".toggle-info").forEach(button => {
+              button.addEventListener("click", function(e) {
+                // Prevent card click from triggering when clicking the button
+                e.stopPropagation();
+                const infoDiv = this.nextElementSibling;
+                if (infoDiv.style.display === "none" || infoDiv.style.display === "") {
+                  infoDiv.style.display = "block";
+                  this.textContent = "Hide Details";
+                } else {
+                  infoDiv.style.display = "none";
+                  this.textContent = "Show Details";
+                }
+              });
+            });
+          }
       } catch (error) {
         document.getElementById('results').innerHTML = `<p class="error">An error occurred: ${error}</p>`;
       } finally {

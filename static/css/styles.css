@@ -145,3 +145,39 @@ input[type="text"] {
   color: #ff5555;
   font-weight: bold;
 }
+/* New rule for the description block */
+#description {
+  margin: 20px 0;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+    /* Additional inline styles for interactive song cards */
+    .song-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      transition: transform 0.3s, background 0.3s;
+      cursor: pointer;
+    }
+    .song-card:hover {
+      transform: scale(1.02);
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .song-info {
+      margin-top: 8px;
+      display: none;
+      font-size: 14px;
+      color: #ddd;
+    }
+    .toggle-info {
+      background: #ffdd57;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 8px;
+    }
