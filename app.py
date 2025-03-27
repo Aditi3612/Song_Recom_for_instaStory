@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import pickle
-from description import rank_songs, process_image
+from description import rank_songs_with_sentiment, process_image
 
 app = Flask(__name__)
 
@@ -85,7 +85,7 @@ def upload_photo():
         ]
     
     # Rank songs using the refined description and filtered data.
-    ranked = rank_songs(refined_description, filtered_data, top_n=5)
+    ranked = rank_songs_with_sentiment(refined_description, filtered_data, top_n=5, sentiment_weight=0.5)
     recommendations = [{
         'artist': song['artist'],
         'track': song['track'],
