@@ -4,14 +4,63 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Image Song Recommender</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> 
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <style>
+    /* Additional inline styles for interactive song cards and preview image */
+    .song-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      transition: transform 0.3s, background 0.3s;
+      cursor: pointer;
+    }
+    .song-card:hover {
+      transform: scale(1.02);
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .song-info,
+    .explanation {
+      margin-top: 8px;
+      display: none;
+      font-size: 14px;
+      color: #ddd;
+    }
+    .toggle-info,
+    .toggle-explanation {
+      background: #ffdd57;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    /* Description block styling */
+    #description {
+      margin: 20px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+    /* Preview image styling */
+    #previewImage {
+      max-width: 300px;
+      margin: 10px auto;
+      display: none;
+      border: 2px solid #ffdd57;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 <body>
   <h1>Image Song Recommender</h1>
   <form id="uploadForm" method="POST" action="/upload_photo" enctype="multipart/form-data">
       <label for="photo" class="form-label">Upload an Image:</label>
       <input type="file" id="photo" name="photo" accept="image/*" required>
-      
+      <!-- Real-time preview image -->
+      <img id="previewImage" src="#" alt="Image Preview">
+
       <label for="manual_description" class="form-label">Optional: Enter additional description for the image:</label>
       <input type="text" id="manual_description" name="manual_description" placeholder="e.g. 'A lovely romantic song for my gf'">
       
@@ -78,6 +127,23 @@
   <div id="results"></div>
 
   <script>
+    // Real-time preview for uploaded image
+    document.getElementById('photo').addEventListener('change', function(event) {
+      const preview = document.getElementById('previewImage');
+      const file = event.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        }
+        reader.readAsDataURL(file);
+      } else {
+        preview.src = "#";
+        preview.style.display = "none";
+      }
+    });
+
     document.getElementById('uploadForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       // Show spinner
@@ -91,58 +157,76 @@
         const result = await response.json();
         const resultsDiv = document.getElementById('results');
         if (result.error) {
-            resultsDiv.innerHTML = `<p class="error">${result.error}</p>`;
+          resultsDiv.innerHTML = `<p class="error">${result.error}</p>`;
         } else {
-            // Create a button to toggle the refined description
-            let html = `<button id="toggleDescription" class="submit-button" style="margin-bottom: 20px;">Show Description</button>
-                        <div id="description" style="display: none;">
-                          <h2>Description:</h2>
-                          <p>${result.refined_description}</p>
-                        </div>`;
-            html += '<h2>Song Recommendations:</h2><ul>';
-            // Create interactive song recommendation cards
-            result.recommendations.forEach((item, index) => {
-              html += `<li>
-                        <div class="song-card" data-index="${index}">
-                          <h3>${item.artist} - ${item.track}</h3>
-                          <button class="toggle-info">Show Details</button>
-                          <div class="song-info">
-                            <p>Similarity Score: ${item.similarity.toFixed(2)}</p>
+          // Toggle for refined description
+          let html = `<button id="toggleDescription" class="submit-button" style="margin-bottom: 20px;">Show Description</button>
+                      <div id="description" style="display: none;">
+                        <h2>Description:</h2>
+                        <p>${result.refined_description}</p>
+                      </div>`;
+          // Song recommendations header
+          html += '<h2>Song Recommendations:</h2><ul>';
+          // Build interactive song recommendation cards
+          result.recommendations.forEach((item, index) => {
+            html += `<li>
+                      <div class="song-card" data-index="${index}">
+                        <h3>${item.artist} - ${item.track}</h3>
+                        <button class="toggle-info">Show Details</button>
+                        <div class="song-info">
+                          <p>Similarity Score: ${item.similarity.toFixed(2)}</p>
+                          <button class="toggle-explanation">Show Explanation</button>
+                          <div class="explanation">
+                            <p>${item.description}</p>
                           </div>
                         </div>
-                      </li>`;
-            });
-            html += '</ul>';
-            resultsDiv.innerHTML = html;
+                      </div>
+                    </li>`;
+          });
+          html += '</ul>';
+          resultsDiv.innerHTML = html;
 
-            // Toggle for the refined description
-            document.getElementById('toggleDescription').addEventListener('click', function() {
-              const descDiv = document.getElementById('description');
-              if (descDiv.style.display === "none") {
-                descDiv.style.display = "block";
-                this.textContent = "Hide Description";
+          // Toggle for the refined description section
+          document.getElementById('toggleDescription').addEventListener('click', function() {
+            const descDiv = document.getElementById('description');
+            if (descDiv.style.display === "none") {
+              descDiv.style.display = "block";
+              this.textContent = "Hide Description";
+            } else {
+              descDiv.style.display = "none";
+              this.textContent = "Show Description";
+            }
+          });
+
+          // Toggle for each song card's details and explanation
+          document.querySelectorAll(".toggle-info").forEach(button => {
+            button.addEventListener("click", function(e) {
+              e.stopPropagation();
+              const infoDiv = this.nextElementSibling;
+              if (infoDiv.style.display === "none" || infoDiv.style.display === "") {
+                infoDiv.style.display = "block";
+                this.textContent = "Hide Details";
               } else {
-                descDiv.style.display = "none";
-                this.textContent = "Show Description";
+                infoDiv.style.display = "none";
+                this.textContent = "Show Details";
               }
             });
+          });
 
-            // Toggle for each song card's details
-            document.querySelectorAll(".toggle-info").forEach(button => {
-              button.addEventListener("click", function(e) {
-                // Prevent card click from triggering when clicking the button
-                e.stopPropagation();
-                const infoDiv = this.nextElementSibling;
-                if (infoDiv.style.display === "none" || infoDiv.style.display === "") {
-                  infoDiv.style.display = "block";
-                  this.textContent = "Hide Details";
-                } else {
-                  infoDiv.style.display = "none";
-                  this.textContent = "Show Details";
-                }
-              });
+          document.querySelectorAll(".toggle-explanation").forEach(button => {
+            button.addEventListener("click", function(e) {
+              e.stopPropagation();
+              const explanationDiv = this.nextElementSibling;
+              if (explanationDiv.style.display === "none" || explanationDiv.style.display === "") {
+                explanationDiv.style.display = "block";
+                this.textContent = "Hide Explanation";
+              } else {
+                explanationDiv.style.display = "none";
+                this.textContent = "Show Explanation";
+              }
             });
-          }
+          });
+        }
       } catch (error) {
         document.getElementById('results').innerHTML = `<p class="error">An error occurred: ${error}</p>`;
       } finally {

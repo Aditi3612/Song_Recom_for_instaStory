@@ -89,6 +89,7 @@ def upload_photo():
     recommendations = [{
         'artist': song['artist'],
         'track': song['track'],
+        'description': song.get('description', 'No description available.'),  # Added description field
         'similarity': float(sim)  # convert numpy float32 to native float
     } for song, sim in ranked]
     
