@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Image Song Recommender</title>
+  <title>Media Song Recommender</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <style>
-    /* Additional inline styles for interactive song cards and preview image */
     .song-card {
       background: rgba(255, 255, 255, 0.1);
       padding: 15px;
@@ -19,15 +18,13 @@
       transform: scale(1.02);
       background: rgba(255, 255, 255, 0.2);
     }
-    .song-info,
-    .explanation {
+    .song-info, .explanation {
       margin-top: 8px;
       display: none;
       font-size: 14px;
       color: #ddd;
     }
-    .toggle-info,
-    .toggle-explanation {
+    .toggle-info, .toggle-explanation {
       background: #ffdd57;
       border: none;
       border-radius: 4px;
@@ -36,14 +33,13 @@
       font-weight: bold;
       margin-top: 8px;
     }
-    /* Description block styling */
     #description {
       margin: 20px 0;
       padding: 10px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
     }
-    /* Preview image styling */
+    /* Updated preview styling to handle video elements as well */
     #previewImage {
       max-width: 300px;
       margin: 10px auto;
@@ -54,21 +50,21 @@
   </style>
 </head>
 <body>
-  <h1>Image Song Recommender</h1>
+  <h1>Media Song Recommender</h1>
   <form id="uploadForm" method="POST" action="/upload_photo" enctype="multipart/form-data">
-      <label for="photo" class="form-label">Upload an Image:</label>
-      <input type="file" id="photo" name="photo" accept="image/*" required>
-      <!-- Real-time preview image -->
-      <img id="previewImage" src="#" alt="Image Preview">
-
-      <label for="manual_description" class="form-label">Optional: Enter additional description for the image:</label>
-      <input type="text" id="manual_description" name="manual_description" placeholder="e.g. 'A lovely romantic song for my gf'">
+      <label for="photo" class="form-label">Upload a Photo or Video:</label>
+      <!-- Updated to accept both images and videos -->
+      <input type="file" id="photo" name="photo" accept="image/*,video/*" required>
+      <div id="previewContainer">
+        <img id="previewImage" src="#" alt="Media Preview">
+      </div>
+      <label for="manual_description" class="form-label">Optional: Enter additional description:</label>
+      <input type="text" id="manual_description" name="manual_description" placeholder="e.g. 'A lively concert scene'">
       
       <div class="filters-container">
         <fieldset class="filter-section">
           <legend>Filter by Artist:</legend>
           <div class="filter-options">
-            <!-- Artist checkboxes -->
             <label><input type="checkbox" name="artists" value="Sachin-Jigar"> Sachin-Jigar</label>
             <label><input type="checkbox" name="artists" value="The Weeknd"> The Weeknd</label>
             <label><input type="checkbox" name="artists" value="Udit Narayan"> Udit Narayan</label>
@@ -107,7 +103,6 @@
         <fieldset class="filter-section">
           <legend>Filter by Language:</legend>
           <div class="filter-options">
-            <!-- Language checkboxes -->
             <label><input type="checkbox" name="languages" value="English"> English</label>
             <label><input type="checkbox" name="languages" value="Hindi"> Hindi</label>
             <label><input type="checkbox" name="languages" value="Punjabi"> Punjabi</label>
@@ -123,34 +118,39 @@
       <div id="loading" class="spinner hidden"></div>
   </form>
   
-  <!-- This div will display the results from the server -->
   <div id="results"></div>
 
   <script>
-    // Real-time preview for uploaded image
+    // Preview for uploaded image/video.
     document.getElementById('photo').addEventListener('change', function(event) {
-      const preview = document.getElementById('previewImage');
+      const previewContainer = document.getElementById('previewContainer');
       const file = event.target.files[0];
-      if(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          preview.src = e.target.result;
-          preview.style.display = "block";
+      if (file) {
+        if (file.type.startsWith('video/')) {
+          const url = URL.createObjectURL(file);
+          // Replace the preview element with a video element.
+          previewContainer.innerHTML = `<video id="previewImage" controls style="max-width:300px; margin:10px auto; display:block;">
+                                          <source src="${url}" type="${file.type}">
+                                          Your browser does not support the video tag.
+                                        </video>`;
+        } else {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('previewImage').src = e.target.result;
+            document.getElementById('previewImage').style.display = "block";
+          }
+          reader.readAsDataURL(file);
         }
-        reader.readAsDataURL(file);
       } else {
-        preview.src = "#";
-        preview.style.display = "none";
+        document.getElementById('previewImage').src = "#";
+        document.getElementById('previewImage').style.display = "none";
       }
     });
 
     document.getElementById('uploadForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      // Show spinner
       document.getElementById('loading').classList.remove('hidden');
-      // Clear previous results
       document.getElementById('results').innerHTML = "";
-
       const formData = new FormData(this);
       try {
         const response = await fetch('/upload_photo', { method: 'POST', body: formData });
@@ -159,15 +159,12 @@
         if (result.error) {
           resultsDiv.innerHTML = `<p class="error">${result.error}</p>`;
         } else {
-          // Toggle for refined description
           let html = `<button id="toggleDescription" class="submit-button" style="margin-bottom: 20px;">Show Description</button>
                       <div id="description" style="display: none;">
                         <h2>Description:</h2>
                         <p>${result.refined_description}</p>
                       </div>`;
-          // Song recommendations header
           html += '<h2>Song Recommendations:</h2><ul>';
-          // Build interactive song recommendation cards
           result.recommendations.forEach((item, index) => {
             html += `<li>
                       <div class="song-card" data-index="${index}">
@@ -186,7 +183,6 @@
           html += '</ul>';
           resultsDiv.innerHTML = html;
 
-          // Toggle for the refined description section
           document.getElementById('toggleDescription').addEventListener('click', function() {
             const descDiv = document.getElementById('description');
             if (descDiv.style.display === "none") {
@@ -198,7 +194,6 @@
             }
           });
 
-          // Toggle for each song card's details and explanation
           document.querySelectorAll(".toggle-info").forEach(button => {
             button.addEventListener("click", function(e) {
               e.stopPropagation();
@@ -230,7 +225,6 @@
       } catch (error) {
         document.getElementById('results').innerHTML = `<p class="error">An error occurred: ${error}</p>`;
       } finally {
-        // Hide spinner
         document.getElementById('loading').classList.add('hidden');
       }
     });
