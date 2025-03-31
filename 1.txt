@@ -1,0 +1,10 @@
+Flask
+google-generativeai
+requests
+transformers
+torch
+Pillow
+sentence-transformers
+scikit-learn
+tf-keras
+numpy
