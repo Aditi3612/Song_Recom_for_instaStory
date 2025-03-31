@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, jsonify
+import os
 import pickle
-from description import rank_songs_with_sentiment, process_image
+from flask import Flask, render_template, request, jsonify
+from description import rank_songs_with_sentiment, process_image, process_video
 
 app = Flask(__name__)
 
@@ -8,7 +9,7 @@ app = Flask(__name__)
 with open('song_data.pkl', 'rb') as f:
     precomputed_song_data = pickle.load(f)
 
-# Mapping from artist name to language category based on provided list
+# Mapping from artist to language category
 artist_language = {
     "Sachin-Jigar": "Hindi",
     "The Weeknd": "English",
@@ -41,7 +42,6 @@ artist_language = {
     "Lana Del Rey": "English",
     "Thaman S": "Telugu",
     "Cheema Y": "Punjabi",
-    "Jaani": "Hindi",
     "Jaani": "Punjabi",
     "Ariana Grande": "English"
 }
@@ -52,45 +52,46 @@ def index():
 
 @app.route('/upload_photo', methods=['POST'])
 def upload_photo():
-    # Check for the uploaded image file
     if 'photo' not in request.files:
-        return jsonify({'error': 'Missing image file.'}), 400
+        return jsonify({'error': 'Missing file.'}), 400
     file = request.files['photo']
     if file.filename == "":
-        return jsonify({'error': 'No selected file.'}), 400
+        return jsonify({'error': 'No file selected.'}), 400
 
-    # Get the optional manual description from the form
     manual_description = request.form.get('manual_description', "").strip()
-    
-    # Get selected language filters and artist filters
     selected_languages = request.form.getlist('languages')
     selected_artists = request.form.getlist('artists')
+
+    # Check file extension to decide if it's a video or an image.
+    filename = file.filename.lower()
+    video_extensions = {'.mp4', '.avi', '.mov', '.mkv'}
+    if any(filename.endswith(ext) for ext in video_extensions):
+        refined_description = process_video(file, manual_description)
+    else:
+        refined_description = process_image(file, manual_description)
     
-    # Process the image using BLIP + Gemini (manual_description is appended if provided)
-    refined_description = process_image(file, manual_description)
-    
-    # Filter the precomputed song data
+    # Filter precomputed song data based on selected filters.
     filtered_data = precomputed_song_data
-    # Filter by language if specified
     if selected_languages:
         filtered_data = [
             song for song in filtered_data
             if artist_language.get(song['artist'], "Other") in selected_languages
         ]
-    # Further filter by artist if specified
     if selected_artists:
         filtered_data = [
             song for song in filtered_data
             if song['artist'] in selected_artists
         ]
     
-    # Rank songs using the refined description and filtered data.
+    # Rank songs using the composite ranking function.
     ranked = rank_songs_with_sentiment(refined_description, filtered_data, top_n=5, sentiment_weight=0.5)
+    
+    # Build recommendations (without Spotify integration)
     recommendations = [{
         'artist': song['artist'],
         'track': song['track'],
-        'description': song.get('description', 'No description available.'),  # Added description field
-        'similarity': float(sim)  # convert numpy float32 to native float
+        'description': song.get('description', 'No description available.'),
+        'similarity': float(sim)
     } for song, sim in ranked]
     
     return jsonify({
