@@ -103,6 +103,10 @@ Open `http://127.0.0.1:5000` in your browser.
 - [Lyrics.ovh](https://lyricsovh.docs.apiary.io/)  
 
 ---
+## 🧭 Application Flowchart
+<p align="center">
+  <img src="https://github.com/Aditi3612/Song_Recom_for_instaStory/blob/main/Final_flowchart.png?raw=true" width="600">
+</p>
 
 
 
