@@ -105,7 +105,11 @@ Open `http://127.0.0.1:5000` in your browser.
 ---
 
 ## 🧭 Application Flowchart
-https://github.com/Aditi3612/Song_Recom_for_instaStory/blob/main/project_flowchart.png
+
+<p align="center">
+  <img src="https://github.com/Aditi3612/Song_Recom_for_instaStory/blob/main/project_flowchart.png?raw=true" width="600">
+</p>
+
 
 
 
